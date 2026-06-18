@@ -6,7 +6,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from main import Base, app, get_db
+from database import Base, get_db
+from main import app
 
 TEST_DATABASE_URL = os.getenv(
     "TEST_DATABASE_URL",
@@ -17,16 +18,6 @@ test_engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
-# ---------------------------------------------------------------------------
-# Fixture principal — garante isolamento completo entre testes.
-#
-# Ciclo por teste:
-#   1. create_all  → cria tabelas no banco de testes do zero
-#   2. dependency_overrides → redireciona get_db para o banco de testes
-#   3. yield TestClient → executa o teste
-#   4. clear overrides → restaura dependências originais
-#   5. drop_all → destrói todas as tabelas, limpando qualquer estado
-# ---------------------------------------------------------------------------
 @pytest.fixture()
 def client() -> TestClient:
     Base.metadata.create_all(bind=test_engine)
@@ -47,10 +38,6 @@ def client() -> TestClient:
     Base.metadata.drop_all(bind=test_engine)
 
 
-# ---------------------------------------------------------------------------
-# Fixture auxiliar — cria uma carta real no banco antes do teste.
-# Depende de `client` para garantir que roda dentro do ciclo de isolamento.
-# ---------------------------------------------------------------------------
 @pytest.fixture()
 def carta_existente(client: TestClient) -> dict:
     response = client.post(
@@ -68,11 +55,6 @@ def carta_existente(client: TestClient) -> dict:
     return response.json()
 
 
-# ---------------------------------------------------------------------------
-# Fixture de fábrica — padrão avançado que retorna uma função para criar
-# cartas com parâmetros customizados. Evita duplicação nos testes que
-# precisam de múltiplos registros com atributos variados.
-# ---------------------------------------------------------------------------
 @pytest.fixture()
 def carta_factory(client: TestClient) -> Callable:
     def _criar(**kwargs) -> dict:

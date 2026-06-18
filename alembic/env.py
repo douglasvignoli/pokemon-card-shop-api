@@ -13,7 +13,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from main import Base, settings
+from database import Base, settings
 
 # Configuração de logging do alembic.ini
 config = context.config

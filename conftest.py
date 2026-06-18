@@ -1,5 +1,5 @@
 import os
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 from fastapi.testclient import TestClient
@@ -53,14 +53,17 @@ def client() -> TestClient:
 # ---------------------------------------------------------------------------
 @pytest.fixture()
 def carta_existente(client: TestClient) -> dict:
-    response = client.post("/cartas", json={
-        "nome": "Charizard",
-        "preco": 250.00,
-        "estoque": 3,
-        "raridade": "Holo Rara",
-        "tipo": "Fogo",
-        "expansao": "Base Set",
-    })
+    response = client.post(
+        "/cartas",
+        json={
+            "nome": "Charizard",
+            "preco": 250.00,
+            "estoque": 3,
+            "raridade": "Holo Rara",
+            "tipo": "Fogo",
+            "expansao": "Base Set",
+        },
+    )
     assert response.status_code == 201
     return response.json()
 

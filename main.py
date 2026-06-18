@@ -1,6 +1,5 @@
 import os
 from enum import Enum
-from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -88,8 +87,8 @@ class CartaCreate(BaseModel):
     estoque: int = 0
     ativo: bool = True
     raridade: Raridade = Raridade.comum
-    tipo: Optional[Tipo] = None
-    expansao: Optional[str] = None
+    tipo: Tipo | None = None
+    expansao: str | None = None
 
     @field_validator("nome")
     @classmethod
@@ -116,31 +115,31 @@ class CartaCreate(BaseModel):
 class CartaUpdate(BaseModel):
     """Schema para atualização parcial (PATCH) — todos os campos são opcionais."""
 
-    nome: Optional[str] = None
-    preco: Optional[float] = None
-    estoque: Optional[int] = None
-    ativo: Optional[bool] = None
-    raridade: Optional[Raridade] = None
-    tipo: Optional[Tipo] = None
-    expansao: Optional[str] = None
+    nome: str | None = None
+    preco: float | None = None
+    estoque: int | None = None
+    ativo: bool | None = None
+    raridade: Raridade | None = None
+    tipo: Tipo | None = None
+    expansao: str | None = None
 
     @field_validator("nome")
     @classmethod
-    def nome_nao_pode_ser_vazio(cls, v: Optional[str]) -> Optional[str]:
+    def nome_nao_pode_ser_vazio(cls, v: str | None) -> str | None:
         if v is not None and not v.strip():
             raise ValueError("nome não pode ser vazio ou conter apenas espaços")
         return v.strip() if v else v
 
     @field_validator("preco")
     @classmethod
-    def preco_deve_ser_positivo(cls, v: Optional[float]) -> Optional[float]:
+    def preco_deve_ser_positivo(cls, v: float | None) -> float | None:
         if v is not None and v <= 0:
             raise ValueError("preco deve ser maior que zero")
         return v
 
     @field_validator("estoque")
     @classmethod
-    def estoque_nao_pode_ser_negativo(cls, v: Optional[int]) -> Optional[int]:
+    def estoque_nao_pode_ser_negativo(cls, v: int | None) -> int | None:
         if v is not None and v < 0:
             raise ValueError("estoque não pode ser negativo")
         return v
@@ -153,8 +152,8 @@ class CartaResponse(BaseModel):
     estoque: int
     ativo: bool
     raridade: Raridade
-    tipo: Optional[Tipo]
-    expansao: Optional[str]
+    tipo: Tipo | None
+    expansao: str | None
 
     model_config = {"from_attributes": True}
 
@@ -204,7 +203,7 @@ def health_check(db: Session = Depends(get_db)):
         db.execute(text("SELECT 1"))
         return {"status": "ok", "database": "connected"}
     except Exception:
-        raise HTTPException(status_code=503, detail="Banco de dados indisponível")
+        raise HTTPException(status_code=503, detail="Banco de dados indisponível") from None
 
 
 # ---------------------------------------------------------------------------
@@ -217,9 +216,9 @@ def health_check(db: Session = Depends(get_db)):
     summary="Lista cartas com filtros e paginação",
 )
 def listar_cartas(
-    ativo: Optional[bool] = Query(None, description="Filtrar por disponibilidade"),
-    raridade: Optional[Raridade] = Query(None, description="Filtrar por raridade"),
-    tipo: Optional[Tipo] = Query(None, description="Filtrar por tipo de carta"),
+    ativo: bool | None = Query(None, description="Filtrar por disponibilidade"),
+    raridade: Raridade | None = Query(None, description="Filtrar por raridade"),
+    tipo: Tipo | None = Query(None, description="Filtrar por tipo de carta"),
     skip: int = Query(0, ge=0, description="Registros a pular (paginação)"),
     limit: int = Query(100, ge=1, le=100, description="Máximo de registros retornados"),
     db: Session = Depends(get_db),

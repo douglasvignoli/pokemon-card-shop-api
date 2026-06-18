@@ -30,6 +30,7 @@ CARTA_BASE = {
 # SISTEMA
 # ===========================================================================
 
+
 def test_health_check(client):
     response = client.get("/health")
     assert response.status_code == 200
@@ -40,6 +41,7 @@ def test_health_check(client):
 # ===========================================================================
 # LISTAGEM — GET /cartas
 # ===========================================================================
+
 
 def test_listar_cartas_banco_vazio(client):
     response = client.get("/cartas")
@@ -117,6 +119,7 @@ def test_filtrar_por_tipo(client, carta_factory):
 # CRIAÇÃO — POST /cartas
 # ===========================================================================
 
+
 def test_criar_carta_retorna_201_e_id(client):
     response = client.post("/cartas", json=CARTA_BASE)
     assert response.status_code == 201
@@ -154,15 +157,18 @@ def test_criar_carta_nome_e_sanitizado(client):
     assert response.json()["nome"] == "Mewtwo"
 
 
-@pytest.mark.parametrize("payload,descricao", [
-    ({"nome": "", "preco": 50.0}, "nome vazio"),
-    ({"nome": "   ", "preco": 50.0}, "nome só com espaços"),
-    ({"nome": "Bulbasaur", "preco": 0}, "preco zero"),
-    ({"nome": "Bulbasaur", "preco": -10.0}, "preco negativo"),
-    ({"nome": "Bulbasaur", "preco": 50.0, "estoque": -1}, "estoque negativo"),
-    ({"preco": 50.0}, "nome ausente"),
-    ({"nome": "Bulbasaur"}, "preco ausente"),
-])
+@pytest.mark.parametrize(
+    "payload,descricao",
+    [
+        ({"nome": "", "preco": 50.0}, "nome vazio"),
+        ({"nome": "   ", "preco": 50.0}, "nome só com espaços"),
+        ({"nome": "Bulbasaur", "preco": 0}, "preco zero"),
+        ({"nome": "Bulbasaur", "preco": -10.0}, "preco negativo"),
+        ({"nome": "Bulbasaur", "preco": 50.0, "estoque": -1}, "estoque negativo"),
+        ({"preco": 50.0}, "nome ausente"),
+        ({"nome": "Bulbasaur"}, "preco ausente"),
+    ],
+)
 def test_criar_carta_payload_invalido_retorna_422(client, payload, descricao):
     response = client.post("/cartas", json=payload)
     assert response.status_code == 422, f"Esperado 422 para: {descricao}"
@@ -171,6 +177,7 @@ def test_criar_carta_payload_invalido_retorna_422(client, payload, descricao):
 # ===========================================================================
 # BUSCA — GET /cartas/{id}
 # ===========================================================================
+
 
 def test_buscar_carta_por_id_sucesso(client, carta_existente):
     carta_id = carta_existente["id"]
@@ -189,13 +196,14 @@ def test_buscar_carta_id_inexistente_retorna_404(client):
 # ATUALIZAÇÃO PARCIAL — PATCH /cartas/{id}
 # ===========================================================================
 
+
 def test_patch_atualiza_apenas_campo_enviado(client, carta_existente):
     carta_id = carta_existente["id"]
     response = client.patch(f"/cartas/{carta_id}", json={"preco": 999.99})
     assert response.status_code == 200
     data = response.json()
     assert data["preco"] == 999.99
-    assert data["nome"] == carta_existente["nome"]   # inalterado
+    assert data["nome"] == carta_existente["nome"]  # inalterado
     assert data["estoque"] == carta_existente["estoque"]  # inalterado
 
 
@@ -221,6 +229,7 @@ def test_patch_preco_invalido_retorna_422(client, carta_existente):
 # REMOÇÃO — DELETE /cartas/{id}
 # ===========================================================================
 
+
 def test_deletar_carta_retorna_204(client, carta_existente):
     carta_id = carta_existente["id"]
     response = client.delete(f"/cartas/{carta_id}")
@@ -243,6 +252,7 @@ def test_deletar_carta_inexistente_retorna_404(client):
 # ISOLAMENTO — garante que cada teste começa com banco vazio
 # ===========================================================================
 
+
 def test_banco_isolado_entre_execucoes(client):
     """
     Este teste é proposital e simples: se algum estado vazasse de outro teste,
@@ -250,6 +260,4 @@ def test_banco_isolado_entre_execucoes(client):
     """
     response = client.get("/cartas")
     assert response.status_code == 200
-    assert response.json() == [], (
-        "Banco não está vazio — isolamento da fixture client falhou"
-    )
+    assert response.json() == [], "Banco não está vazio — isolamento da fixture client falhou"

@@ -1,5 +1,7 @@
 # Pokémon Card Shop — API de Cartas
 
+[![CI](https://github.com/douglasvignoli/pokemon-card-shop-api/actions/workflows/tests.yml/badge.svg)](https://github.com/douglasvignoli/pokemon-card-shop-api/actions/workflows/tests.yml)
+
 API REST para gerenciamento de catálogo de cartas Pokémon em um e-commerce, desenvolvida com FastAPI, SQLAlchemy e PostgreSQL, com testes automatizados via Pytest rodando contra banco real em Docker.
 
 ---
@@ -8,16 +10,18 @@ API REST para gerenciamento de catálogo de cartas Pokémon em um e-commerce, de
 
 | Tecnologia | Versão | Função |
 |---|---|---|
-| FastAPI | 0.111.0 | Framework principal |
-| SQLAlchemy | 2.0.30 | ORM para mapeamento da tabela |
-| Pydantic | 2.7.1 | Validação de entrada e schema de saída |
-| pydantic-settings | 2.2.1 | Configuração via variáveis de ambiente |
+| FastAPI | 0.137.2 | Framework principal |
+| SQLAlchemy | 2.0.49 | ORM para mapeamento da tabela |
+| Pydantic | 2.13.4 | Validação de entrada e schema de saída |
+| pydantic-settings | 2.14.1 | Configuração via variáveis de ambiente |
 | PostgreSQL | 15 | Banco de dados (via Docker) |
-| Pytest | 8.2.0 | Suíte de testes automatizados |
-| httpx | 0.27.0 | Dependência do TestClient (FastAPI moderno) |
-| pytest-cov | 5.0.0 | Relatório de cobertura de testes |
+| Pytest | 9.1.0 | Suíte de testes automatizados |
+| httpx2 | 2.4.0 | Dependência do TestClient (FastAPI moderno) |
+| pytest-cov | 7.1.0 | Relatório de cobertura de testes |
 | Adminer | 4.8.1 | Interface web de administração do banco |
-| Alembic | 1.13.1 | Gerenciamento de migrações de banco de dados |
+| Alembic | 1.18.4 | Gerenciamento de migrações de banco de dados |
+| Ruff | 0.11.13 | Linter + formatter (substitui Black, Flake8 e isort) |
+| mypy | 1.16.0 | Checagem estática de tipos |
 
 ---
 

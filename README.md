@@ -340,6 +340,6 @@ make clean       # remove containers, volumes e cache
 
 <div align="center">
 
-Feito com Python 🐍 e muito ☕
+🐍 Feito com Pokemons 🐍
 
 </div>
